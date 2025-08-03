@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bat & Human Vocalization</title>
+    <link href="./output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container mx-auto p-8 rounded-2xl shadow-xl bg-white max-w-6xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Bat Vocalization Column -->
+            <div class="p-8 rounded-2xl bg-orange-50 bg-opacity-70 shadow-md">
+                <h2 class="text-xl font-bold mb-8 text-center text-orange-900">Bat Vocalization</h2>
+
+                <!-- Context Section -->
+                <div class="mb-8">
+                    <p class="text-lg font-medium text-orange-800 mb-4">Context</p>
+                    
+                    <!-- Feeding Button -->
+                    <div class="flex items-center space-x-4 mb-4">
+                        <button id="feeding-btn" class="flex items-center w-full px-6 py-3 rounded-full bg-orange-100 hover:bg-orange-200 transition-colors duration-200 shadow-md">
+                            <!-- Speaker SVG Icon (fixed path) -->
+                            <svg class="h-6 w-6 text-orange-700 mr-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9.383 3.097A1 1 0 0110 3v14a1 1 0 01-1.617.754l -4.5 -3.5A1 1 0 003 14V6a1 1 0 00.883-.404l -4.5 -3.5a1 1 0 011-.004z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="font-semibold text-orange-800">Feeding</span>
+                        </button>
+                    </div>
+
+                    <!-- Fighting Button -->
+                    <div class="flex items-center space-x-4">
+                        <button id="fighting-btn" class="flex items-center w-full px-6 py-3 rounded-full bg-orange-300 hover:bg-orange-400 transition-colors duration-200 shadow-md">
+                            <!-- Speaker SVG Icon (fixed path) -->
+                            <svg class="h-6 w-6 text-orange-900 mr-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9.383 3.097A1 1 0 0110 3v14a1 1 0 01-1.617.754l -4.5 -3.5A1 1 0 003 14V6a1 1 0 00.883-.404l -4.5 -3.5a1 1 0 011-.004z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="font-semibold text-orange-900">Fighting</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Spectrogram Display -->
+                <p class="text-lg font-medium text-orange-800 mb-4 text-center">Bat Spectrogram</p>
+                <div class="w-full h-80 p-2 rounded-lg border-2 border-orange-300 bg-gray-50 flex items-center justify-center shadow-inner">
+                    <img id="bat-spectrogram" src="https://placehold.co/400x320/FDBA74/ffffff?text=Spectrogram" alt="Bat Spectrogram" class="object-contain h-full w-full rounded-md" onerror="this.src='https://placehold.co/400x320/FDBA74/ffffff?text=Spectrogram+Not+Found'">
+                </div>
+            </div>
+
+            <!-- Human Vocalization Column -->
+            <div class="p-8 rounded-2xl bg-white-50 shadow-md">
+                <h2 class="text-xl font-bold mb-8 text-center text-gray-800">Human Vocalization</h2>
+
+                <!-- Recording Button -->
+                <div class="flex items-center justify-center mb-8 h-48">
+                    <button id="recording-btn" class="w-48 h-48 rounded-full flex items-center justify-center flex-col shadow-xl transform transition-all duration-300 hover:scale-105 recording-gradient">
+                        <span class="text-lg font-bold recording-button-text">Start 5-sec</span>
+                        <span class="text-lg font-bold recording-button-text">Recording</span>
+                    </button>
+                </div>
+
+                <!-- Spectrogram Display -->
+                <p class="text-lg font-medium text-gray-800 mb-4 text-center">Your Spectrogram</p>
+                <div class="w-full h-80 p-2 rounded-lg border-2 border-gray-300 bg-gray-50 flex items-center justify-center shadow-inner">
+                    <img id="your-spectrogram" src="https://placehold.co/400x320/E5E7EB/4B5563?text=Recording+Spectrogram" alt="Your Spectrogram" class="object-contain h-full w-full rounded-md">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const feedingBtn = document.getElementById('feeding-btn');
+            const fightingBtn = document.getElementById('fighting-btn');
+            const recordingBtn = document.getElementById('recording-btn');
+            const batSpectrogramImg = document.getElementById('bat-spectrogram');
+            const yourSpectrogramImg = document.getElementById('your-spectrogram');
+            
+            // A single Audio object to handle playback
+            const audioPlayer = new Audio();
+
+            /**
+             * Function to play audio from a given URL.
+             * It pauses any currently playing audio, sets the new source,
+             * and attempts to play it with detailed error handling.
+             * @param {string} url - The URL of the audio file to play.
+             */
+            const playAudio = async (url) => {
+                try {
+                    audioPlayer.pause();
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.src = url;
+                    await audioPlayer.play();
+                } catch (e) {
+                    console.error(`Error playing audio from ${url}:`, e.message);
+                    if (e.name === 'NotAllowedError') {
+                        alert('Audio playback was blocked. Please ensure autoplay is allowed or try again after interacting with the page.');
+                    } else if (e.name === 'NotSupportedError') {
+                        alert('The audio format is not supported by your browser.');
+                    } else {
+                        alert('Failed to load audio. It may be inaccessible or blocked by CORS. Please try again later.');
+                    }
+                }
+            };
+
+            /**
+             * Handles the click event for the "Feeding" button.
+             * Plays the feeding audio and displays the corresponding spectrogram.
+             */
+            feedingBtn.addEventListener('click', () => {
+                const feedingAudioUrl = "https://github.com/cadenza2025/bat/raw/main/10006.wav";
+                const feedingSpectrogramUrl = "https://github.com/cadenza2025/bat/raw/main/sg10006-0-feeding.png";
+                playAudio(feedingAudioUrl);
+                batSpectrogramImg.src = feedingSpectrogramUrl;
+            });
+
+            /**
+             * Handles the click event for the "Fighting" button.
+             * Plays the fighting audio and displays the corresponding spectrogram.
+             */
+            fightingBtn.addEventListener('click', () => {
+                const fightingAudioUrl = "https://github.com/cadenza2025/bat/raw/main/10449.wav";
+                const fightingSpectrogramUrl = "https://github.com/cadenza2025/bat/raw/main/sg10449-1-fighting.png";
+                playAudio(fightingAudioUrl);
+                batSpectrogramImg.src = fightingSpectrogramUrl;
+            });
+
+            /**
+             * Handles the click event for the "Start 5-sec Recording" button.
+             * Simulates recording and spectrogram generation (Python code cannot be run client-side).
+             */
+            recordingBtn.addEventListener('click', async () => {
+                // Show a loading state on the spectrogram box
+                yourSpectrogramImg.src = "https://placehold.co/400x320/E5E7EB/4B5563?text=Recording...+Please+wait+5s";
+
+                // Disable the button to prevent multiple clicks during the "recording"
+                recordingBtn.disabled = true;
+                recordingBtn.classList.add('cursor-not-allowed', 'opacity-50');
+
+                console.log("Starting 5-second recording...");
+
+                try {
+                    // Request microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const mediaRecorder = new MediaRecorder(stream);
+                    const audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.start();
+                    console.log("Recording started...");
+
+                    // Stop recording after 5 seconds
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                        console.log("Recording stopped.");
+                    }, 5000);
+
+                    mediaRecorder.onstop = async () => {
+                        // Simulate spectrogram generation (client-side limitation)
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        console.log("Audio recorded, simulating spectrogram generation...");
+
+                        // Display a placeholder spectrogram
+                        yourSpectrogramImg.src = "https://placehold.co/400x320/D1D5DB/1F2937?text=Your+Spectrogram+Placeholder";
+                        console.log("Spectrogram simulation complete.");
+
+                        // Clean up the stream
+                        stream.getTracks().forEach(track => track.stop());
+
+                        // Re-enable the button
+                        recordingBtn.disabled = false;
+                        recordingBtn.classList.remove('cursor-not-allowed', 'opacity-50');
+                    };
+                } catch (e) {
+                    console.error("Error accessing microphone:", e.message);
+                    yourSpectrogramImg.src = "https://placehold.co/400x320/E5E7EB/4B5563?text=Microphone+Access+Denied";
+                    recordingBtn.disabled = false;
+                    recordingBtn.classList.remove('cursor-not-allowed', 'opacity-50');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
