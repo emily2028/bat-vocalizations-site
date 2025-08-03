@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vocalization Comparison</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+    }
+    .container {
+      display: flex;
+      border: 2px solid #ccc;
+      padding: 20px;
+      width: 900px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .section {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+    }
+    .section h2 {
+      margin-bottom: 20px;
+    }
+    .button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .record-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(to bottom, #8b0000, #ff6347);
+      color: white;
+      font-size: 16px;
+      line-height: 120px;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+    .spectrogram {
+      margin-top: 20px;
+      height: 200px;
+      width: 100%;
+      border: 1px solid #999;
+      background-color: #f4f4f4;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Bat Vocalization -->
+    <div class="section">
+      <h2>Bat Vocalization</h2>
+      <button class="button" onclick="playFeeding()">Feeding</button>
+      <button class="button" onclick="playFighting()">Fighting</button>
+      <div id="bat-spectrogram" class="spectrogram"></div>
+    </div>
+
+    <!-- Human Vocalization -->
+    <div class="section">
+      <h2>Human Vocalization</h2>
+      <div class="record-circle" onclick="startRecording()">Start 5-sec Recording</div>
+      <div id="human-spectrogram" class="spectrogram"></div>
+    </div>
+  </div>
+
+  <!-- Hidden Audio Player -->
+  <audio id="player"></audio>
+
+  <script>
+    function playFeeding() {
+      const audio = document.getElementById('player');
+      audio.src = "https://github.com/cadenza2025/bat/raw/main/10006.wav"; //good
+      audio.play();
+      document.getElementById("bat-spectrogram").style.backgroundImage =
+        "url('https://raw.githubusercontent.com/cadenza2025/bat/refs/heads/main/sg10006-0-feeding.png?token=GHSAT0AAAAAADIQNPGF6NCZT5JXXR33Q5H42EO6XSQ')";
+    }
+
+    function playFighting() {
+      const audio = document.getElementById('player');
+      audio.src = "https://github.com/cadenza2025/bat/raw/main/10449.wav"; // good
+      audio.play();
+      document.getElementById("bat-spectrogram").style.backgroundImage =
+        "url('https://github.com/cadenza2025/bat/blob/main/sg10449-1-fighting.png?raw=true')";
+    }
+
+    function startRecording() {
+      // This is a placeholder — your GitHub code would be run server-side
+      fetch("https://your-backend-endpoint/run-recording")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("human-spectrogram").style.backgroundImage =
+            "url('" + data.spectrogram_url + "')";
+        })
+        .catch(err => console.error("Recording failed:", err));
+    }
+  </script>
+
+</body>
+</html>
