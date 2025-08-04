@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vocalization Comparison</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      display: flex;
+      width: 80%;
+      height: 80%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .section {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    /* left panel */
+    .section:nth-child(1) {
+      background: #f8e9d2;
+    }
+    /* right panel */
+    .section:nth-child(2) {
+      background: #e0eaf5;
+    }
+    .title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    .context {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .context button {
+      display: inline-flex;
+      align-items: center;
+      margin: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background: #fff;
+      transition: background 0.2s;
+    }
+    .context button:hover {
+      background: #f0f0f0;
+    }
+    .context button span {
+      margin-left: 6px; /* space for icon */
+      font-size:18px;
+    }
+    .spectrogram {
+      width: 100%;
+      height: 200px;
+      border: 1px solid #aaa;
+      background-size: cover;
+      background-position: center;
+    }
+    .recording-button {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 20px auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #c0392b);
+      color: #fff;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Bat Vocalization Panel -->
+    <div class="section">
+      <div class="title">Bat Vocalization</div>
+      <div class="context">
+        <button id="feedingButton">
+          Feeding <span>🔊</span>
+        </button>
+        <button id="fightingButton">
+          Fighting <span>🔊</span>
+        </button>
+      </div>
+      <div class="spectrogram" id="batSpectrogram"></div>
+    </div>
+    
+    <!-- Human Vocalization Panel -->
+    <div class="section">
+      <div class="title">Human Vocalization</div>
+      <div class="recording-button" id="recordingButton">
+        Start 5-sec Recording
+      </div>
+      <div class="spectrogram" id="humanSpectrogram"></div>
+    </div>
+  </div>
+
+  <script>
+    // BAT AUDIO + SPECTROGRAM
+    document.getElementById('feedingButton').addEventListener('click', () => {
+      playAudio('http://localhost:5000/static/10006-0-feeding.wav'); 
+      setSpectrogram(
+        'batSpectrogram',
+        'http://localhost:5000/static/sg10006-0-feeding.png'
+      );
+    });
+    document.getElementById('fightingButton').addEventListener('click', () => {
+      playAudio('http://localhost:5000/static/10449.wav');
+      setSpectrogram(
+        'batSpectrogram',
+        'http://localhost:5000/static/sg10449-1-fighting.png'
+      );
+    });
+
+    function playAudio(src) {
+      if (!src) return;
+      const a = new Audio(src);
+      a.play();
+    }
+    function setSpectrogram(elId, url) {
+      const el = document.getElementById(elId);
+      el.style.backgroundImage = `url(${url})`;
+    }
+
+    // HUMAN RECORDING + SPECTROGRAM
+    let mediaRecorder, audioChunks = [];
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = onRecordingStop;
+      })
+      .catch(err => alert('Microphone access denied'));
+
+    document.getElementById('recordingButton').addEventListener('click', startRecording);
+
+    function startRecording() {
+      if (!mediaRecorder) return;
+      audioChunks = [];
+      const btn = document.getElementById('recordingButton');
+      
+      // play beep (100ms)
+      playBeep(100);
+
+      // enlarge button
+      btn.style.transform = 'scale(1.3)';
+      
+      // wait 100ms, then record 5s
+      setTimeout(() => {
+        mediaRecorder.start();
+        setTimeout(() => mediaRecorder.stop(), 5000);
+      }, 100);
+    }
+
+    function playBeep(duration) {
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      osc.frequency.value = 440;
+      osc.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration/1000);
+    }
+
+    function onRecordingStop() {
+      const btn = document.getElementById('recordingButton');
+      btn.style.transform = 'scale(1)';
+
+      // send blob to backend to generate spectrogram
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const form = new FormData();
+      form.append('audio', blob, 'recording.webm');
+
+      fetch('http://localhost:5000/generate-spectrogram', {
+        method: 'POST',
+        body: form
+      })
+      .then(res => res.json())
+      .then(json => {
+        // backend should return { imageUrl: 'http://.../my-spec.png' }
+        setSpectrogram('humanSpectrogram', json.imageUrl);
+      })
+      .catch(err => console.error('Spectrogram error:', err));
+    }
+  </script>
+</body>
+</html>
