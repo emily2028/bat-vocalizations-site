@@ -111,8 +111,8 @@
              * Plays the feeding audio and displays the corresponding spectrogram.
              */
             feedingBtn.addEventListener('click', () => {
-                const feedingAudioUrl = "https://github.com/cadenza2025/bat/raw/main/10006.wav";
-                const feedingSpectrogramUrl = "https://github.com/cadenza2025/bat/raw/main/sg10006-0-feeding.png";
+                const feedingAudioUrl = "http://localhost:5000/static/10006.wav";
+                const feedingSpectrogramUrl = "http://localhost:5000/static/sg10006-0-feeding.png";
                 playAudio(feedingAudioUrl);
                 batSpectrogramImg.src = feedingSpectrogramUrl;
             });
@@ -122,8 +122,8 @@
              * Plays the fighting audio and displays the corresponding spectrogram.
              */
             fightingBtn.addEventListener('click', () => {
-                const fightingAudioUrl = "https://github.com/cadenza2025/bat/raw/main/10449.wav";
-                const fightingSpectrogramUrl = "https://github.com/cadenza2025/bat/raw/main/sg10449-1-fighting.png";
+                const fightingAudioUrl = "http://localhost:5000/static/10449.wav";
+                const fightingSpectrogramUrl = "http://localhost:5000/static/sg10449-1-fighting.png";
                 playAudio(fightingAudioUrl);
                 batSpectrogramImg.src = fightingSpectrogramUrl;
             });
