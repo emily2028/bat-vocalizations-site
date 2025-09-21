@@ -120,13 +120,13 @@
     // BAT AUDIO + SPECTROGRAM
     document.getElementById('feedingButton').addEventListener('click', () => {
       playAudio('10006 feeding.wav'); 
-      /*const imageContainer=document.getElementById('batSpectrogram');
+      const imageContainer=document.getElementById('batSpectrogram');
       const newImage = document.createElement('img');
       newImage.src = 'human vocal test.png';
     
     
       // Append the new image to the container
-      imageContainer.appendChild(newImage);*/
+      imageContainer.appendChild(newImage);
     });
     document.getElementById('fightingButton').addEventListener('click', () => {
       playAudio('10449.wav');
@@ -142,7 +142,8 @@
       a.play();
     }
     function setSpectrogram(elId, url) {
-     
+      const el = document.getElementById(elId);
+      el.style.backgroundImage = `url(${url})`;
     }
 
     // HUMAN RECORDING + SPECTROGRAM
