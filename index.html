@@ -113,14 +113,14 @@
   <script>
     // BAT AUDIO + SPECTROGRAM
     document.getElementById('feedingButton').addEventListener('click', () => {
-      playAudio('http://localhost:5000/static/10006-0-feeding.wav'); 
+      playAudio('10006 feeding.wav'); 
       setSpectrogram(
         'batSpectrogram',
         'http://localhost:5000/static/sg10006-0-feeding.png'
       );
     });
     document.getElementById('fightingButton').addEventListener('click', () => {
-      playAudio('http://localhost:5000/static/10449.wav');
+      playAudio('10449.wav');
       setSpectrogram(
         'batSpectrogram',
         'http://localhost:5000/static/sg10449-1-fighting.png'
