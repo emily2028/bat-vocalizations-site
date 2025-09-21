@@ -67,6 +67,12 @@
       background-size: cover;
       background-position: center;
     }
+    .spectrogram img{
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
     .recording-button {
       width: 150px;
       height: 150px;
@@ -134,7 +140,7 @@
     }
     function setSpectrogram(elId, url) {
       const el = document.getElementById(elId);
-      el.inner.HTML = `<imag src="human vocal test.png">`;
+      el.inner.HTML = `<img src="human vocal test.png">`;
     }
 
     // HUMAN RECORDING + SPECTROGRAM
